@@ -56,7 +56,7 @@ Incident, Status, Customer, Department, Summary, Description, Resolution, Servic
 
 ## Screenshots
 
-<img width="2993" height="2016" alt="image" src="https://github.com/user-attachments/assets/fe303749-939d-4e52-8891-b945a601ebac" />
+<img width="2000" height="1347" alt="82a27c3e-8354-4e9b-8d17-669ac28b67dd" src="https://github.com/user-attachments/assets/513a0db4-ba95-46da-947b-da1229cbfa50" />
 
 
 ## License
