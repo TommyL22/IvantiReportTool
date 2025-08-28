@@ -65,4 +65,4 @@ MIT License
 
 ---
 
-**Developed for quick ticket data analysis and
+**Developed for quick ticket data analysis and visualisation**
