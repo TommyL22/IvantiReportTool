@@ -238,6 +238,47 @@ def average_ticket_modified():
     plt.tight_layout()
     plt.show()
 
+def export_oldest_tickets():
+    header = data[0]
+    date_field = export_method_var.get()
+    try:
+        days = int(export_days_var.get())
+        if days < 0:
+            raise ValueError
+    except ValueError:
+        tk.messagebox.showerror("Error", "Please enter a valid positive integer for days.")
+        return
+
+    try:
+        date_idx = header.index(date_field)
+    except ValueError:
+        tk.messagebox.showerror("Error", f"Column '{date_field}' not found in CSV.")
+        return
+
+    today = datetime.now()
+    filtered_rows = [header]
+    for row in data[1:]:
+        if len(row) > date_idx:
+            date_str = row[date_idx].strip()
+            try:
+                date = datetime.strptime(date_str, "%m/%d/%Y %H:%M")
+                age_days = (today - date).days
+                if age_days > days:
+                    filtered_rows.append(row)
+            except Exception:
+                continue
+
+    if len(filtered_rows) == 1:
+        tk.messagebox.showinfo("Export", "No records found older than the specified days.")
+        return
+
+    save_path = fd.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    if save_path:
+        with open(save_path, "w", newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerows(filtered_rows)
+        tk.messagebox.showinfo("Export", f"Exported {len(filtered_rows)-1} records to {save_path}")
+
 # Function to run the selected tool
 def run_tool():
     method = output_var.get()
@@ -249,6 +290,8 @@ def run_tool():
         owner_last_modified()
     elif method == "Average Ticket Modified":
         average_ticket_modified()
+    elif method == "Export Oldest Tickets":
+        export_oldest_tickets()
     # Add more elifs for other output methods
 
 # Function to show/hide input fields based on output method
@@ -263,6 +306,10 @@ def update_input_visibility(*args):
         owner_menu.place_forget()
         date_group_label.place_forget()
         date_group_menu.place_forget()
+        export_method_label.place_forget()
+        export_method_menu.place_forget()
+        export_days_label.place_forget()
+        export_days_entry.place_forget()
     elif method == "Owner Last Modified":
         x_label.place_forget()
         x_menu.place_forget()
@@ -272,6 +319,23 @@ def update_input_visibility(*args):
         owner_menu.place(relx=0.25, rely=0.76, anchor=tk.CENTER)
         date_group_label.place(relx=0.66, rely=0.66, anchor=tk.CENTER)
         date_group_menu.place(relx=0.66, rely=0.76, anchor=tk.CENTER)
+        export_method_label.place_forget()
+        export_method_menu.place_forget()
+        export_days_label.place_forget()
+        export_days_entry.place_forget()
+    elif method == "Export Oldest Tickets":
+        x_label.place_forget()
+        x_menu.place_forget()
+        series_label.place_forget()
+        series_menu.place_forget()
+        owner_label.place_forget()
+        owner_menu.place_forget()
+        date_group_label.place_forget()
+        date_group_menu.place_forget()
+        export_method_label.place(relx=0.25, rely=0.66, anchor=tk.CENTER)
+        export_method_menu.place(relx=0.25, rely=0.76, anchor=tk.CENTER)
+        export_days_label.place(relx=0.66, rely=0.66, anchor=tk.CENTER)
+        export_days_entry.place(relx=0.66, rely=0.76, anchor=tk.CENTER)
     else:
         x_label.place_forget()
         x_menu.place_forget()
@@ -281,6 +345,10 @@ def update_input_visibility(*args):
         owner_menu.place_forget()
         date_group_label.place_forget()
         date_group_menu.place_forget()
+        export_method_label.place_forget()
+        export_method_menu.place_forget()
+        export_days_label.place_forget()
+        export_days_entry.place_forget()
 
 # Initialize main window
 root = tk.Tk()
@@ -317,7 +385,7 @@ series_menu.place(relx=0.66, rely=0.78, anchor=tk.CENTER)
 
 # Dropdown for Output Method
 output_var = tk.StringVar(value="Custom Graph")
-output_methods = ["Custom Graph", "Average Ticket Age", "Average Ticket Modified", "Owner Last Modified"] # Add more methods as needed
+output_methods = ["Custom Graph", "Average Ticket Age", "Average Ticket Modified", "Owner Last Modified", "Export Oldest Tickets"] # Add more methods as needed
 output_menu = ttk.OptionMenu(root, output_var, output_methods[0], *output_methods)
 output_label = ttk.Label(text='Output Method:')
 output_label.place(relx=0.33, rely=0.36, anchor=tk.CENTER)
@@ -338,6 +406,15 @@ owner_label.place(relx=0.25, rely=0.66, anchor=tk.CENTER)
 owner_menu.place(relx=0.25, rely=0.76, anchor=tk.CENTER)
 date_group_label.place(relx=0.66, rely=0.66, anchor=tk.CENTER)
 date_group_menu.place(relx=0.66, rely=0.76, anchor=tk.CENTER)
+
+# Export method and days (for Export Oldest Tickets)
+export_method_var = tk.StringVar(value="Created On")
+export_method_menu = ttk.OptionMenu(root, export_method_var, "Created On", "Created On", "Modified On")
+export_method_label = ttk.Label(text='Export Method:')
+
+export_days_var = tk.StringVar(value="300")
+export_days_label = ttk.Label(text='Older Than (days):')
+export_days_entry = ttk.Entry(root, textvariable=export_days_var, width=7)
 
 # Hide Custom Graph inputs when not selected
 output_var.trace_add("write", update_input_visibility)
