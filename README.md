@@ -16,6 +16,9 @@ A simple Python Tkinter application for visualizing and analyzing ticket data fr
 - **Owner Last Modified:**  
   Select an owner and group their ticket modifications by day, week, or month, visualized as a bar chart.
 
+- **Export Oldest Tickets:**  
+Generate a CSV of tickets older than, or modified before a specified date. This new CSV can then be input to visualise data.
+
 ## Usage
 
 1. **Install requirements:**
